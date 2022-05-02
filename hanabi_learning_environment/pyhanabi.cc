@@ -332,6 +332,16 @@ void StateApplyMove(pyhanabi_state_t* state, pyhanabi_move_t* move) {
   hanabi_state->ApplyMove(*hanabi_move);
 }
 
+void AdvanceToNextPlayer(pyhanabi_state_t* state) {
+  REQUIRE(state != nullptr);
+  auto hanabi_state =
+      reinterpret_cast<hanabi_learning_env::HanabiState*>(state->state);
+
+  printf("Calling Advance to next player");
+  exit(1);
+  hanabi_state->AdvanceToNextPlayer();
+}
+
 int StateCurPlayer(pyhanabi_state_t* state) {
   REQUIRE(state != nullptr);
   REQUIRE(state->state != nullptr);

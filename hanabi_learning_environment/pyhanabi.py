@@ -532,6 +532,10 @@ class HanabiState(object):
     """Advance the environment state by making move for acting player."""
     lib.StateApplyMove(self._state, move.c_move)
 
+  def advance_to_next_player(self):
+    """Advance the environment state."""
+    lib.AdvanceToNextPlayer(self._state)
+
   def cur_player(self):
     """Returns index of next player to act.
 

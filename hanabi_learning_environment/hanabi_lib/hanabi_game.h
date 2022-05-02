@@ -84,6 +84,8 @@ class HanabiGame {
   int MaxScore() const { return num_ranks_ * num_colors_; }
   std::string Name() const { return "Hanabi"; }
 
+  void DropPlayer();
+
   int NumColors() const { return num_colors_; }
   int NumRanks() const { return num_ranks_; }
   int NumPlayers() const { return num_players_; }

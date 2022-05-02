@@ -84,6 +84,8 @@ class HanabiState {
   bool ChanceOutcomeIsLegal(HanabiMove move) const { return MoveIsLegal(move); }
   double ChanceOutcomeProb(HanabiMove move) const;
   void ApplyChanceOutcome(HanabiMove move) { ApplyMove(move); }
+
+  void AdvanceToNextPlayer();  // Set cur_player to next player to act.
   void ApplyRandomChance();
   // Get the valid chance moves, and associated probabilities.
   // Guaranteed that moves.size() == probabilities.size().
@@ -121,7 +123,6 @@ class HanabiState {
   HanabiHand* HandByOffset(int offset) {
     return &hands_[(cur_player_ + offset) % hands_.size()];
   }
-  void AdvanceToNextPlayer();  // Set cur_player to next player to act.
   bool HintingIsLegal(HanabiMove move) const;
   int PlayerToDeal() const;  // -1 if no player needs a card.
   bool IncrementInformationTokens();
