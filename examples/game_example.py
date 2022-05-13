@@ -23,12 +23,12 @@ from hanabi_learning_environment import pyhanabi
 
 def run_game(game_parameters):
   """Play a game, selecting random actions."""
-  hints = 0
-  chance_to_drop = float(input("Chance for communication to be dropped: "))
-  max_player_drop = int(input("Maximum number of disconnected players: "))
-  player_drop_chance = float(input("Chance for player to drop on communication: "))
+  # hints = 0
+  # chance_to_drop = float(input("Chance for communication to be dropped: "))
+  # max_player_drop = int(input("Maximum number of disconnected players: "))
+  # player_drop_chance = float(input("Chance for player to drop on communication: "))
 
-  dropped_players = {}
+  # dropped_players = {}
   
   def print_state(state):
     """Print some basic information about the state."""
@@ -86,20 +86,20 @@ def run_game(game_parameters):
 
   state = game.new_initial_state()
   while not state.is_terminal():
-    hints += 1
+    # hints += 1
     cur_player = state.cur_player()
     if state.cur_player() == pyhanabi.CHANCE_PLAYER_ID:
       state.deal_random_card()
       continue
 
-    if random.uniform(0,1) <= player_drop_chance and max_player_drop < len(dropped_players):
-      if cur_player() not in dropped_players:
-        continue
-      dropped_players[cur_player()] = True
+    # if random.uniform(0,1) <= player_drop_chance and max_player_drop < len(dropped_players):
+    #   if cur_player() not in dropped_players:
+    #     continue
+    #   dropped_players[cur_player()] = True
     
-    if cur_player in dropped_players:
-      state.advance_to_next_player()
-      continue
+    # if cur_player in dropped_players:
+    #   state.advance_to_next_player()
+    #   continue
   
 
     print_state(state)
@@ -115,9 +115,9 @@ def run_game(game_parameters):
     move = np.random.choice(legal_moves)
     print("Chose random legal move: {}".format(move))
 
-    if random.uniform(0,1) <= chance_to_drop :
-      state.advance_to_next_player()
-      continue
+    # if random.uniform(0,1) <= chance_to_drop :
+    #   state.advance_to_next_player()
+    #   continue
     
     state.apply_move(move)   
 
@@ -127,8 +127,8 @@ def run_game(game_parameters):
   print(state)
   print("")
   print("score: {}".format(state.score()))
-  messages = hints//3
-  print("drop chance: 0.20 | total hints sent: ", str(messages), "| hints dropped: " , str(messages // 5))
+  # messages = hints//3
+  # print("drop chance: 0.20 | total hints sent: ", str(messages), "| hints dropped: " , str(messages // 5))
 
 if __name__ == "__main__":
   # Check that the cdef and library were loaded from the standard paths.

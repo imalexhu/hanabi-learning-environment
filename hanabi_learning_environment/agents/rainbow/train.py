@@ -101,6 +101,10 @@ def main(unused_argv):
   Args:
     unused_argv: Arguments (unused).
   """
+  # max_player_drop = int(input("Maximum number of disconnected players: "))
+  # player_drop_chance = float(input("Chance for player to drop on communication: "))
+  # dropped_players = {}
+
   launch_experiment()
 
 if __name__ == '__main__':

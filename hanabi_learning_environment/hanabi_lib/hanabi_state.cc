@@ -17,8 +17,21 @@
 #include <algorithm>
 #include <cassert>
 #include <numeric>
+#include <random> 
+#include <ctime>
+#include <iostream>
 
 #include "util.h"
+
+std::random_device rd;
+    std::uniform_int_distribution<int> dist(1, 100);
+
+int dropChance = 10;
+
+bool drop(){
+  int rand =  dist(rd);
+  return rand < dropChance; 
+}
 
 namespace hanabi_learning_env {
 
@@ -220,57 +233,59 @@ bool HanabiState::MoveIsLegal(HanabiMove move) const {
 
 void HanabiState::ApplyMove(HanabiMove move) {
   REQUIRE(MoveIsLegal(move));
-  if (deck_.Empty()) {
-    --turns_to_play_;
-  }
-  HanabiHistoryItem history(move);
-  history.player = cur_player_;
-  switch (move.MoveType()) {
-    case HanabiMove::kDeal: {
-        history.deal_to_player = PlayerToDeal();
-        HanabiHand::CardKnowledge card_knowledge(ParentGame()->NumColors(),
-                                      ParentGame()->NumRanks());
-        if (parent_game_->ObservationType() == HanabiGame::kSeer){
-          card_knowledge.ApplyIsColorHint(move.Color());
-          card_knowledge.ApplyIsRankHint(move.Rank());
+  if(!drop()){
+    if (deck_.Empty()) {
+      --turns_to_play_;
+    }
+    HanabiHistoryItem history(move);
+    history.player = cur_player_;
+    switch (move.MoveType()) {
+      case HanabiMove::kDeal: {
+          history.deal_to_player = PlayerToDeal();
+          HanabiHand::CardKnowledge card_knowledge(ParentGame()->NumColors(),
+                                        ParentGame()->NumRanks());
+          if (parent_game_->ObservationType() == HanabiGame::kSeer){
+            card_knowledge.ApplyIsColorHint(move.Color());
+            card_knowledge.ApplyIsRankHint(move.Rank());
+          }
+          hands_[history.deal_to_player].AddCard(
+              deck_.DealCard(move.Color(), move.Rank()),
+              card_knowledge);
         }
-        hands_[history.deal_to_player].AddCard(
-            deck_.DealCard(move.Color(), move.Rank()),
-            card_knowledge);
-      }
-      break;
-    case HanabiMove::kDiscard:
-      history.information_token = IncrementInformationTokens();
-      history.color = hands_[cur_player_].Cards()[move.CardIndex()].Color();
-      history.rank = hands_[cur_player_].Cards()[move.CardIndex()].Rank();
-      hands_[cur_player_].RemoveFromHand(move.CardIndex(), &discard_pile_);
-      break;
-    case HanabiMove::kPlay:
-      history.color = hands_[cur_player_].Cards()[move.CardIndex()].Color();
-      history.rank = hands_[cur_player_].Cards()[move.CardIndex()].Rank();
-      std::tie(history.scored, history.information_token) =
-          AddToFireworks(hands_[cur_player_].Cards()[move.CardIndex()]);
-      hands_[cur_player_].RemoveFromHand(
-          move.CardIndex(), history.scored ? nullptr : &discard_pile_);
-      break;
-    case HanabiMove::kRevealColor:
-      DecrementInformationTokens();
-      history.reveal_bitmask =
-          HandColorBitmask(*HandByOffset(move.TargetOffset()), move.Color());
-      history.newly_revealed_bitmask =
-          HandByOffset(move.TargetOffset())->RevealColor(move.Color());
-      break;
-    case HanabiMove::kRevealRank:
-      DecrementInformationTokens();
-      history.reveal_bitmask =
-          HandRankBitmask(*HandByOffset(move.TargetOffset()), move.Rank());
-      history.newly_revealed_bitmask =
-          HandByOffset(move.TargetOffset())->RevealRank(move.Rank());
-      break;
-    default:
-      std::abort();  // Should not be possible.
+        break;
+      case HanabiMove::kDiscard:
+        history.information_token = IncrementInformationTokens();
+        history.color = hands_[cur_player_].Cards()[move.CardIndex()].Color();
+        history.rank = hands_[cur_player_].Cards()[move.CardIndex()].Rank();
+        hands_[cur_player_].RemoveFromHand(move.CardIndex(), &discard_pile_);
+        break;
+      case HanabiMove::kPlay:
+        history.color = hands_[cur_player_].Cards()[move.CardIndex()].Color();
+        history.rank = hands_[cur_player_].Cards()[move.CardIndex()].Rank();
+        std::tie(history.scored, history.information_token) =
+            AddToFireworks(hands_[cur_player_].Cards()[move.CardIndex()]);
+        hands_[cur_player_].RemoveFromHand(
+            move.CardIndex(), history.scored ? nullptr : &discard_pile_);
+        break;
+      case HanabiMove::kRevealColor:
+        DecrementInformationTokens();
+        history.reveal_bitmask =
+            HandColorBitmask(*HandByOffset(move.TargetOffset()), move.Color());
+        history.newly_revealed_bitmask =
+            HandByOffset(move.TargetOffset())->RevealColor(move.Color());
+        break;
+      case HanabiMove::kRevealRank:
+        DecrementInformationTokens();
+        history.reveal_bitmask =
+            HandRankBitmask(*HandByOffset(move.TargetOffset()), move.Rank());
+        history.newly_revealed_bitmask =
+            HandByOffset(move.TargetOffset())->RevealRank(move.Rank());
+        break;
+      default:
+        std::abort();  // Should not be possible.
+    }
+    move_history_.push_back(history);
   }
-  move_history_.push_back(history);
   AdvanceToNextPlayer();
 }
 
