@@ -333,6 +333,7 @@ def run_one_episode(agent, environment, obs_stacker):
   agent.end_episode(reward_since_last_action)
 
   tf.logging.info('EPISODE: %d %g', step_number, total_reward)
+ 
   return step_number, total_reward
 
 
@@ -410,6 +411,9 @@ def run_one_iteration(agent, environment, obs_stacker,
   average_return = sum_returns / num_episodes
   tf.logging.info('Average per episode return: %.2f', average_return)
   statistics.append({'average_return': average_return})
+  f = open("store.txt","a")
+  f.write("\n" + str(iteration) + " " + str(average_return))
+  f.close()
 
   # Also run an evaluation phase if desired.
   if evaluate_every_n is not None and iteration % evaluate_every_n == 0:
@@ -509,3 +513,5 @@ def run_experiment(agent,
                           iteration, checkpoint_dir, checkpoint_every_n)
     tf.logging.info('Checkpointing iteration %d took %d seconds', iteration,
                     time.time() - start_time)
+
+  
