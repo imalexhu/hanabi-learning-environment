@@ -411,7 +411,7 @@ def run_one_iteration(agent, environment, obs_stacker,
   average_return = sum_returns / num_episodes
   tf.logging.info('Average per episode return: %.2f', average_return)
   statistics.append({'average_return': average_return})
-  f = open("store.txt","a")
+  f = open("store2.txt","a")
   f.write("\n" + str(iteration) + " " + str(average_return))
   f.close()
 

@@ -26,7 +26,7 @@
 std::random_device rd;
     std::uniform_int_distribution<int> dist(1, 100);
 
-int dropChance = 0;
+int dropChance = 20;
 
 bool drop(){
   int rand =  dist(rd);
